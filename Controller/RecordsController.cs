@@ -190,9 +190,11 @@ namespace CodingTracker
 
         public static void DeleteRecord()
         {
+            Console.Clear();
+
             string? dbPath = ConfigurationManager.AppSettings.Get("dbPath");
 
-            bool isValidInput = false;
+            //bool isValidInput = false;
 
             using (var connection = new SQLiteConnection($"Data Source={dbPath}"))
             {
@@ -206,7 +208,7 @@ namespace CodingTracker
                 {
                     Console.Write("\nEnter the ID of the record you want to delete: ");
                     recordId = GetRecordId(recordId);
-                } while (isValidInput == false);
+                } while (recordId <= 0);
 
                 string? confirmation;
                 do
@@ -225,7 +227,7 @@ namespace CodingTracker
                 } while ((confirmation != "y") && (confirmation != "n"));
 
                 string deleteQuery = @"
-        DELETE FROM HabitInstances
+        DELETE FROM CodingSessions
         WHERE Id = @recordId";
 
                 using (var command = connection.CreateCommand())
@@ -252,7 +254,7 @@ namespace CodingTracker
         {
             string? dbPath = ConfigurationManager.AppSettings.Get("dbPath");
 
-            bool isValidInput = false;
+            //bool isValidInput = false;
 
             using (var connection = new SQLiteConnection($"Data Source={dbPath}"))
             {
@@ -260,26 +262,29 @@ namespace CodingTracker
 
                 if (!int.TryParse(Console.ReadLine(), out recordId))
                 {
-                    isValidInput = false;
+                    //isValidInput = false;
                     Console.WriteLine("Invalid ID. Please enter a numeric value.");
+                    return 0;
                 }
                 else
                 {
-                    string checkHabitInstanceIdQuery = "SELECT COUNT(*) FROM HabitInstances WHERE Id = @recordId";
+                    string checkCodingSessionIdQuery = "SELECT COUNT(*) FROM CodingSessions WHERE Id = @recordId";
                     using (var command = connection.CreateCommand())
                     {
-                        command.CommandText = checkHabitInstanceIdQuery;
+                        command.CommandText = checkCodingSessionIdQuery;
                         command.Parameters.AddWithValue("@recordId", recordId);
 
                         int count = Convert.ToInt32(command.ExecuteScalar());
-                        if (count > 0)
+                        //if (count > 0)
+                        //{
+                        //    isValidInput = true;
+                        //}
+                        //else
+                        if (count <= 0)
                         {
-                            isValidInput = true;
-                        }
-                        else
-                        {
-                            isValidInput = false;
+                            //isValidInput = false;
                             Console.WriteLine("Record not found. Please enter a valid record ID.");
+                            return 0;
                         }
                     }
                 }
