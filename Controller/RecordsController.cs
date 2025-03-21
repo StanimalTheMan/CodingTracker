@@ -94,15 +94,16 @@ namespace CodingTracker
 
         public static void EditRecord()
         {
+            Console.Clear();
+
             string? dbPath = ConfigurationManager.AppSettings.Get("dbPath");
 
-            bool isValidInput = false;
+            //bool isValidInput = false;
 
             using (var connection = new SQLiteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
 
-                Console.Clear();
                 Display.PrintAllRecords("Edit Record");
 
                 int recordId = 0;
@@ -110,18 +111,18 @@ namespace CodingTracker
                 {
                     Console.Write("\nEnter the ID of the record you want to edit: ");
                     recordId = GetRecordId(recordId);
-                } while (isValidInput == false);
+                } while (recordId <= 0);
+
+               
 
                 string selectQuery = @"
-        SELECT h.Habit, h.Unit, hi.Date, hi.Quantity
-        FROM HabitInstances hi
-        JOIN Habits h ON hi.HabitId = h.Id
-        WHERE hi.Id = @recordId";
+        SELECT Date, StartTime, EndTime
+        FROM CodingSessions
+        WHERE Id = @recordId";
 
-                string? habitName = null; ;
-                string? unit = null;
                 DateTime? date = null;
-                int? quantity = null;
+                DateTime? startTime = null;
+                DateTime? endTime = null;
 
                 using (var command = connection.CreateCommand())
                 {
@@ -132,19 +133,17 @@ namespace CodingTracker
                     {
                         if (reader.Read())
                         {
-                            habitName = reader.GetString(0);
-                            unit = reader.GetString(1);
-                            date = reader.GetDateTime(2);
-                            quantity = reader.GetInt32(3);
+                            date = reader.GetDateTime(0);
+                            startTime = reader.GetDateTime(1);
+                            endTime = reader.GetDateTime(2);
                         }
                     }
                 }
 
                 Console.WriteLine($"Selected record ID: {recordId}");
-                Console.WriteLine($"Habit: {habitName}");
                 Console.WriteLine($"Date: {date:yyyy-MM-dd}");
-                Console.WriteLine($"Quantity: {quantity}");
-                Console.WriteLine($"Unit: {unit}");
+                Console.WriteLine($"Start Time: {startTime}");
+                Console.WriteLine($"End Time: {endTime}");
 
                 Console.Write("\nEnter new date (yyyy-MM-dd) (leave blank to keep current): ");
                 string? dateInput = Console.ReadLine();
@@ -153,23 +152,31 @@ namespace CodingTracker
                     date = newDate;
                 }
 
-                Console.Write("\nEnter new quantity (leave blank to keep current): ");
-                string? quantityInput = Console.ReadLine();
-                if (!string.IsNullOrWhiteSpace(quantityInput) && int.TryParse(quantityInput, out int newQuantity))
+                Console.Write("\nEnter new start time (hh:mm) (leave blank to keep current): ");
+                string? startTimeInput = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(startTimeInput) && DateTime.TryParse(startTimeInput, out DateTime newStartTime))
                 {
-                    quantity = newQuantity;
+                    startTime = newStartTime;
+                }
+
+                Console.Write("\nEnter new end time (hh:mm) (leave blank to keep current): ");
+                string? endTimeInput = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(endTimeInput) && DateTime.TryParse(endTimeInput, out DateTime newEndTime))
+                {
+                    endTime = newEndTime;
                 }
 
                 string updateQuery = @"
-        UPDATE HabitInstances
-        SET Date = @date, Quantity = @quantity
+        UPDATE CodingSessions
+        SET Date = @date, StartTime = @startTime, EndTime = @endTime
         WHERE Id = @recordId";
 
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = updateQuery;
                     command.Parameters.AddWithValue("@date", date?.ToString("yyyy-MM-dd"));
-                    command.Parameters.AddWithValue("@quantity", quantity);
+                    command.Parameters.AddWithValue("@startTime", startTime);
+                    command.Parameters.AddWithValue("@endTime", endTime);
                     command.Parameters.AddWithValue("@recordId", recordId);
 
                     int rowsAffected = command.ExecuteNonQuery();
