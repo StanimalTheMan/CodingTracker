@@ -48,6 +48,7 @@ do
             ReturnToMainMenu();
             break;
         case "View Report":
+            repository = new CodingSessionRepository(connection);
             var reportData = repository.GetReportData();
             Display.PrintReport(reportData);
             ReturnToMainMenu();

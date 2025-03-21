@@ -47,3 +47,4 @@ C:\Users\Andrew\Documents\coding stuff\C#\The C# Academy\CodingTracker\bin\Debug
 C:\Users\Andrew\Documents\coding stuff\C#\The C# Academy\CodingTracker\bin\Debug\net8.0\de\Spectre.Console.Cli.resources.dll
 C:\Users\Andrew\Documents\coding stuff\C#\The C# Academy\CodingTracker\bin\Debug\net8.0\fr\Spectre.Console.Cli.resources.dll
 C:\Users\Andrew\Documents\coding stuff\C#\The C# Academy\CodingTracker\bin\Debug\net8.0\sv\Spectre.Console.Cli.resources.dll
+C:\Users\Andrew\Documents\coding stuff\C#\The C# Academy\CodingTracker\obj\Debug\net8.0\CodingTracker.sourcelink.json

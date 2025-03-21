@@ -11,6 +11,8 @@ namespace CodingTracker
 
         public static void AddRecord()
         {
+            Console.Clear();
+
             string? dbPath = ConfigurationManager.AppSettings.Get("dbPath");
 
             bool isValidInput = false;
@@ -18,32 +20,6 @@ namespace CodingTracker
             using (var connection = new SQLiteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
-
-                Console.Clear();
-
-                int habitId = 0;
-                do
-                {
-                    Console.Write("\nEnter the ID of the habit for which you want to add a record: ");
-                    habitId = GetRecordId(habitId);
-                } while (isValidInput == false);
-
-                string checkHabitIdQuery = "SELECT Unit FROM Habits WHERE Id = @habitId";
-                string? unit = null;
-
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText = checkHabitIdQuery;
-                    command.Parameters.AddWithValue("@habitId", habitId);
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            unit = reader.GetString(0);
-                        }
-                    }
-                }
 
                 DateTime date;
                 do
@@ -60,14 +36,29 @@ namespace CodingTracker
                     }
                 } while (isValidInput == false);
 
-                int quantity;
+                DateTime startTime;
                 do
                 {
-                    Console.Write("\nEnter the quantity: ");
-                    if (!int.TryParse(Console.ReadLine(), out quantity))
+                    Console.Write("\nEnter the start time: ");
+                    if (!DateTime.TryParse(Console.ReadLine(), out startTime))
                     {
                         isValidInput = false;
-                        Console.WriteLine("Invalid quantity. Please enter a numeric value.");
+                        Console.WriteLine("Invalid time format. Please enter a time in the format hh:mm.");
+                    }
+                    else
+                    {
+                        isValidInput = true;
+                    }
+                } while (isValidInput == false);
+
+                DateTime endTime;
+                do
+                {
+                    Console.Write("\nEnter the end time: ");
+                    if (!DateTime.TryParse(Console.ReadLine(), out endTime))
+                    {
+                        isValidInput = false;
+                        Console.WriteLine("Invalid time format. Please enter a time in the format hh:mm.");
                     }
                     else
                     {
@@ -76,15 +67,15 @@ namespace CodingTracker
                 } while (isValidInput == false);
 
                 string insertQuery = @"
-        INSERT INTO HabitInstances (HabitId, Date, Quantity)
-        VALUES (@habitId, @date, @quantity)";
+        INSERT INTO CodingSessions (Date, StartTime, EndTime)
+        VALUES (@date, @startTime, @endTime)";
 
                 using (var command = connection.CreateCommand())
                 {
                     command.CommandText = insertQuery;
-                    command.Parameters.AddWithValue("@habitId", habitId);
                     command.Parameters.AddWithValue("@date", date.ToString("yyyy-MM-dd"));
-                    command.Parameters.AddWithValue("@quantity", quantity);
+                    command.Parameters.AddWithValue("@startTime", startTime);
+                    command.Parameters.AddWithValue("@endTime", endTime);
 
                     int rowsAffected = command.ExecuteNonQuery();
                     if (rowsAffected > 0)

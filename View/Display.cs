@@ -48,14 +48,16 @@ namespace CodingTracker
                 reportData.TotalDistinctDays.ToString(),
                 reportData.TotalSessions.ToString(),
                 reportData.TotalDuration.ToString());
-   
-                    //var longestStreaks = codingSession.CalculateStreak();
-                //    Console.WriteLine($"\nLongest Streaks:");
-                //    //foreach (var streak in longestStreaks)
-                //    {
-                //        //Console.WriteLine($"{streak.Key} - {streak.Value} days in a row");
-                //    }
-                //}
+
+            //var longestStreaks = codingSession.CalculateStreak();
+            //    Console.WriteLine($"\nLongest Streaks:");
+            //    //foreach (var streak in longestStreaks)
+            //    {
+            //        //Console.WriteLine($"{streak.Key} - {streak.Value} days in a row");
+            //    }
+            //}
+
+            AnsiConsole.Write(table);
             
         }
 
