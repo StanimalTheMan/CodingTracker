@@ -15,57 +15,14 @@ namespace CodingTracker
 
             string? dbPath = ConfigurationManager.AppSettings.Get("dbPath");
 
-            bool isValidInput = false;
-
             using (var connection = new SQLiteConnection($"Data Source={dbPath}"))
             {
                 connection.Open();
 
-                DateTime date;
-                do
-                {
-                    Console.Write("\nEnter the Date (yyyy-MM-dd): ");
-                    if (!DateTime.TryParse(Console.ReadLine(), out date))
-                    {
-                        isValidInput = false;
-                        Console.WriteLine("Invalid date format. Please enter a date in the format yyyy-MM-dd.");
-                    }
-                    else
-                    {
-                        isValidInput = true;
-                    }
-                } while (isValidInput == false);
-
-                DateTime startTime;
-                do
-                {
-                    Console.Write("\nEnter the start time: ");
-                    if (!DateTime.TryParse(Console.ReadLine(), out startTime))
-                    {
-                        isValidInput = false;
-                        Console.WriteLine("Invalid time format. Please enter a time in the format hh:mm.");
-                    }
-                    else
-                    {
-                        isValidInput = true;
-                    }
-                } while (isValidInput == false);
-
-                DateTime endTime;
-                do
-                {
-                    Console.Write("\nEnter the end time: ");
-                    if (!DateTime.TryParse(Console.ReadLine(), out endTime))
-                    {
-                        isValidInput = false;
-                        Console.WriteLine("Invalid time format. Please enter a time in the format hh:mm.");
-                    }
-                    else
-                    {
-                        isValidInput = true;
-                    }
-                } while (isValidInput == false);
-
+                DateTime date = Validator.GetValidDate("Enter the Date (yyyy-MM-dd): ", false);
+                DateTime startTime = Validator.GetValidDate("Enter the start time (HH:mm):", true);
+                DateTime endTime = Validator.GetValidDate("Enter the end time (HH:mm):", true);
+               
                 string insertQuery = @"
         INSERT INTO CodingSessions (Date, StartTime, EndTime)
         VALUES (@date, @startTime, @endTime)";
